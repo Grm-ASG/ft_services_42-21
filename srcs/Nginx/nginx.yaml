@@ -8,8 +8,17 @@ spec:
   type: LoadBalancer
   ports:
     - protocol: TCP
+      name: ssh
+      port: 22
+      targetPort: 22
+    - protocol: TCP
+      name: http
       port: 80
       targetPort: 80
+    - protocol: TCP
+      name: https
+      port: 443
+      targetPort: 443
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -32,4 +41,6 @@ spec:
         image: nginx_image
         imagePullPolicy: Never
         ports:
+          - containerPort: 22
           - containerPort: 80
+          - containerPort: 443

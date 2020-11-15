@@ -1,15 +1,15 @@
-NAME        =   nginx
+NAME        =   nginx-deployment
 PORT_HTTP   =   80:80
 PORT_HTTPS  =   443:443
 
 
 build:
-	docker build -t $(NAME)_image .
+	docker build -t nginx_image .
 
-test: pre_rec build delete_pod create_pod get_pod
+test: pre_rec build  create_pod get_pod
 
-delete_pod:
-	kubectl delete pods $(NAME)
+delete_deploy:
+	kubectl delete deploy $(NAME)
 
 create_deploy:
 	kubectl apply -f configmap.yaml
@@ -30,20 +30,10 @@ logs_pod:
 describe_pods:
 	kubectl describe pods $(NAME)
 
-pre_rec:
-	$(shell eval $(minikube docker-env))
-	minikube addons enable metallb
+reload_deploy: delete_deploy build create_deploy
 
 re_minikube: stop_minikube delete_minikube start_minikube pre_rec
 
-start_minikube:
-	minikube start --vm-driver=virtualbox
-
-stop_minikube:
-	minikube stop
-
-delete_minikube:
-	minikube delete
 #
 #run:
 #	docker run --name $(NAME) -p $(PORT_HTTP) -p $(PORT_HTTPS) -it $(NAME):$(VERSION)
